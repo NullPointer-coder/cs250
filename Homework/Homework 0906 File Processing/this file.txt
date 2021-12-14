@@ -1,0 +1,23 @@
+                CS250
+                           Assignment 0906
+
+Your Name Here
+
+Problem 1:
+Give a command that would let you easily identify the state file with
+the largest number of bytes.
+
+Answer:
+$ ps -xy *
+
+The reason for this is that the -x option causes ls to yada yada,
+while the the -y option makes it flim flam.  Taken together, they
+cause the output to appear as lorem ipsum, which is the result asked
+for.
+
+Problem 2:
+Give a command that would let you easily identify the state file with
+the largest number of lines.
+
+Answer:
+ 

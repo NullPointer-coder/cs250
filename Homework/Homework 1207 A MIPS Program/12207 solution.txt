@@ -1,0 +1,177 @@
+# A complete program that implements "strcontaini" as a function
+# and calls it on a string.
+# Jon Beck
+
+  .data
+string:                     # global variable for input string
+  .space 11
+
+  .align 2
+character:                  # global variable for input character
+  .space 4
+
+prompt_string:
+  .asciiz "Please enter a string: "
+
+prompt_char:
+  .asciiz "Please enter a character: "
+
+string_yes:
+  .asciiz "contains "
+string_no:
+  .asciiz "does not contain "
+
+  .text
+  .globl main
+main:
+  la    $a0, prompt_string  # print prompt for string
+  li    $v0, 4
+  syscall
+
+  la    $a0, string         # input string
+  li    $a1, 10
+  li    $v0, 8
+  syscall
+
+  la    $a0, prompt_char    # print prompt for character
+  li    $v0, 4
+  syscall
+
+  li    $v0, 12             # read character
+  syscall
+  sw    $v0, character      # store character in global variable in RAM
+
+  li    $a0, 10             # print newline
+  li    $v0, 11
+  syscall
+
+  la    $a0, string         # set up argument 0: string address
+  lw    $a1, character      # set up argument 1: character
+  jal   strcontainsi        # call function
+
+                            # branch if return value is false (0)
+  beq   $v0, $zero, output_no
+
+output_yes:                 # return value was true
+  move  $t0, $a0            # save arg character to t0
+  la    $a0, string         # echo print the string
+  li    $v0, 4
+  syscall
+
+  la    $a0, string_yes     # print does-contain message
+  syscall
+
+  lw    $a0, character      # echo print the character
+  li    $v0, 11
+  syscall
+
+  li    $a0, 10             # print newline
+  li    $v0, 11
+  syscall
+  j     exit                # we're done
+
+output_no:
+  move  $t0, $a0            # save arg character to t0
+  la    $a0, string         # echo print the string
+  li    $v0, 4
+  syscall
+
+  la    $a0, string_no      # print does-not-contain message
+  syscall
+
+  lw    $a0, character      # echo print the character
+  li    $v0, 11
+  syscall
+
+  li    $a0, 10             # print newline
+  syscall
+
+exit:                       # we're done
+  li    $v0, 10             # exit
+  syscall
+  .end  main
+
+strcontainsi:
+  # a0: base address of string
+  # a1: character c
+  # s0: done
+  # s1: found
+  # s2: the current character of the string
+  # s3: &a[i]
+  # s4: result from first toupper
+
+  addiu $sp, $sp, -4        # push ra
+  sw    $ra, 0($sp)
+  addiu $sp, $sp, -4        # push a0
+  sw    $a0, 0($sp)
+  addiu $sp, $sp, -4        # push s0
+  sw    $s0, 0($sp)
+  addiu $sp, $sp, -4        # push s1
+  sw    $s1, 0($sp)
+  addiu $sp, $sp, -4        # push s2
+  sw    $s2, 0($sp)
+  addiu $sp, $sp, -4        # push s3
+  sw    $s3, 0($sp)
+  addiu $sp, $sp, -4        # push s4
+  sw    $s4, 0($sp)
+
+  addu  $s0, $zero, $zero   # done = 0
+  addu  $s1, $zero, $zero   # found = 0
+  addu  $s3, $zero, $a0     # s3 = &a[0]
+
+while:
+  bne   $s0, $zero, done    # exit if done is true
+
+if:
+  lbu   $s2, 0($s3)         # see if we're at the null character
+  bne   $s2, $zero, elif    # not a match
+  ori   $s0, $s0, 1         # yes, we're done = 1
+  j     while
+
+elif:
+  addu  $a0, $s2, $zero     # copy s2 to argument 0
+  jal   toupper             # UC version of the current string character
+  addu  $s4, $v0, $zero     # copy return value to s4
+
+  addu  $a0, $a1, $zero     # copy a1 to argument 0
+  jal   toupper             # UC version of the character
+  addu  $t1, $v0, $zero     # copy return value to t1
+
+  bne   $s4, $t1, increment # if they're not equal, move on
+  ori   $s1, $s1, 1         # they are equal, so set found = 1
+  ori   $s0, $s0, 1         # they are equal, so set done = 1
+  j     while               # go back to loop header
+
+increment:
+  addiu $s3, 1              # a0++
+  j     while               # go back to loop header
+
+done:
+  addu  $v0, $s1, $zero     # copy found to v0 return register
+  lw    $s4, 0($sp)         # pop s4
+  addiu $sp, $sp, 4     
+  lw    $s3, 0($sp)         # pop s3
+  addiu $sp, $sp, 4     
+  lw    $s2, 0($sp)         # pop s2
+  addiu $sp, $sp, 4
+  lw    $s1, 0($sp)         # pop s1  
+  addiu $sp, $sp, 4
+  lw    $s0, 0($sp)         # pop s0  
+  addiu $sp, $sp, 4
+  lw    $a0, 0($sp)         # pop a0  
+  addiu $sp, $sp, 4
+  lw    $ra, 0($sp)         # pop ra  
+  addiu $sp, $sp, 4         
+  jr    $ra                 # return
+
+toupper:
+  # a0: the character parameter
+  # v0: the return value
+
+  move  $v0, $a0            # copy a0 to v0
+  blt   $v0, 0x61, t_return # 0x61 = 'a'; ignore chars less than
+  bgt   $v0, 0x7a, t_return # 0x7a = 'z'; ignore chars greater than
+  subu  $v0, $v0, 0x20      # 0x20 = 'a' - 'A'
+
+t_return:
+  jr    $ra
