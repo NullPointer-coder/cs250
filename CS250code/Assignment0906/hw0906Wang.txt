@@ -1,0 +1,83 @@
+                                 CS250
+                           Assignment 0906
+Jingbo Wang
+
+Problem 1:
+Give a command that would let you easily identify the state file with
+the largest number of bytes.
+
+Answer:
+$ wc -c * | sort -rn
+
+The reason for this is that the -c * option could print the byte counts for each states in the file, while the the -rn option for sort makes the printout reverse from the largest to the least. Taken together, they cause the output to appear as the total bytes at first, the second is the states file with the largest number of bytes, which is the result asked for.
+
+Problem 2:
+Give a command that would let you easily identify the state file with
+the largest number of lines.
+
+Answer:
+$ wc -l * | sort -rn
+
+The reason for this is that the -l * option could print the newline counts for each states in the file, while the the -rn option for sort makes the printout reverse from largest to least. Taken together, they cause the output to appear as the total newlines at first, the second is the states file with the largest number of lines, which is the result asked for.
+
+Problem 3:
+Explain in English what the following command does, and explain the full implications of the command for foo and for users of the system. Be sure to explain fully for the owner, a member of the file’s group who is not the owner, and for a user who is not in the file’s group.
+$ chmod 504 foo
+
+Answer:
+d r-x --- r--
+   5   0   4
+For owner, read and execute.
+For group, no permission.
+For others, read only.
+
+Problem 4:
+Consider the following set of commands:
+$ ls -ld states
+drwxrwxr-x 2 jbeck jbeck 4096 Aug 23 11:00 states
+$ chmod 777 states
+$ ls -ld states 
+drwxrwxrwx 2 jbeck jbeck 4096 Aug 23 11:00 states
+
+Explain in English the implications of this command and why the shell is programmed to particularly highlight the directory name after the command has been issued.
+
+Answer:
+   7   7   7
+d rwx rwx rwx
+
+The reason is that 777 is a permissions that makes states file to full read, write and excute for owner, group and others. So, it will show that this file is dangous for owner when the shell is programmed to particularly highlight the directory name.
+
+Problem 5:
+Give a grep command that will find every city containing an uppercase C.
+
+Answer:
+$ grep -F C *
+
+The reason is that the -F option could fast or fixed with no pattern match and help me to search uppercase C, while * option means for all states file. Taken them together,they cause the output to appear as state name: the city with uppercaes C, which is the result asked for.    
+
+Problem 6:
+Give a grep command that will find every city beginning with uppercase C.
+
+Answer:
+$ grep '^C' *
+
+The reason is that the ^ option in the ' ' option could search the city beginning with uppercase C, while * option means for all states file. Taken them together,they cause the output to appear as state name: the city beginning with uppercaes C, which is the result asked for.
+
+Problem 7:
+Give a grep command that will find every city in California that has an uppercase letter in a position that is not the beginning of the line.
+
+Answer:
+$ grep -E '[A-Z].*[A-Z]'California
+
+The reason is that the -E option cause grep to extend simple regular expression for states file, while the .* option with two [A-Z] means that the city name begins with uppercase A to uppercase Z followed by any numbers of characters, followed by a character with uppercase A through uppercase Z in California. Taken them together, they cause the output to appear as evrey city in California that has an uppercase letter in a position that is not the beginning of the line, which is the result asked for.
+
+Problem 8:
+Give a grep command that will find every city in California that has a maximum of 6 contiguous lowercase letters.
+
+Answer:
+
+$ grep -vE '[a-z]{7}' California
+
+The reason is that the -vE option cause grep to reverse extend simple regular expression for states file, while in the ' 'option means that find the cities in California wich have at least 7 consecutive lowercase leters.
+Taken them together, they cause the output to appear as cities in Califania which have a maximum of 6 contiguous lowercase letters, which is the result asked for.
+

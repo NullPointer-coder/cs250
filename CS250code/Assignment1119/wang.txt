@@ -1,0 +1,151 @@
+				Assignment 1119
+				 Jingbo Wang
+Q1:
+a.
+add $t0, $s1, $s2 # add b + c, put the result in t
+add $s0, $t0, $s0 # add (b + c) + a, put the result in a
+
+b.
+add $t0, $s0, $s1  # store a + b into temporary variable t0
+sub $t1, $s0, $s1  # store a - b into temporary variable t1
+sub $s1, $t0, $t1  # final result: b = (a + b) - (a - b)
+
+c.
+add $t0, $s0, $s1  # store a + b into temporary variable t0
+sub $t1, $t0, $s2  # store a + b - c into temporary variable t1
+sub $t2, $s0, $t0  # store a - (a + b) into temporary variable t2
+add $t3, $t2, $t1  # store a - (a + b) + (a + b - c) into 
+                   # temporary variable t3
+sub $s3, $t3, $s3  # final result: d = a - (a + b) + (a + b - c) - d
+
+Q2:
+a.
+lw $t0, 0($s0)     # copy a to $t0
+sw $t0, 4($s6)     # copy $t0 to A[1]
+
+b.
+lw $t0, 8($s6)     # copy A[2] to $t0
+sw $t0, 0($s1)     # copy $t0 to b
+
+c.
+sll  $t1, $s4, 2    # $t1 = i * 4
+addu $t1, $t1, $s6  # $t1 = &A[i]
+lw   $t0, 0($t1)    # copy A[i] to t0 
+sw   $t0, 0($s2)    # copy t0 to c 
+
+d.
+sll  $t1, $s4, 2    # $t1 = i * 4
+addu $t2, $t1, $s7  # $t2 = &B[i]
+lw   $t0, 0($t2)    # copy B[i] to $t0 
+addu $t3, $t1, $s6  # $t3 = &A[i]
+sw   $t0, 0($t3)    # copy t0 to t3
+ 
+e.
+sll  $t1, $s4, 2    # $t1 = i * 4
+addu $t2, $t1, $s7  # $t2 = &B[i]
+lw   $t0, 4($t2)    # copy B[i + 1] to t0
+addu $t3, $t1, $s6  # $t3 = &A[i]
+sw   $t0, -4($t3)   # copy B[i + 1] to A[i - 1]  
+
+Q3:
+a.
+addi $s0, $s0, 1   # ++a
+sw   $s0, 0($s1)   # b = ++a
+
+b.
+addi $s0, $s0, 1   # ++a
+sw   $t1, 0($s0)   # t1 = ++a
+sub  $t0, $t1, $s1 # t0 = t1 - b
+sw   $t0, 0($s2)   # c = ++a - b
+addi $t0, $t0, 1   # t0++
+sw   $t0, 0($s1)   # b = ++a - b++
+
+c.
+add $t0, $s0, $s1  # store a + b into temporary variable t0
+add $t1, $t0, $s2  # store a + b + c into temporary variable t1
+add $t2, $s2, -1   # store c + -1 into temporary variable t2
+sub $t3, $t2, $s3  # store a + -1 - d into temporary variable t3
+sub $t4, $s0, -5   # store a - -5 into temporary variable t4
+add $t5, $t1, $t3  # store (a + b + c) + (a + -1 - d) into 
+                   # temporary variable t4
+sub $s2, $s5, $t4  # final result:c = (a + b + c) + (a + -1 - d) - (a - -5)
+
+Q4:
+a.
+addu $s0, $s2, $s4
+000000 10010 10110 10000 00000 100001
+0000 0010 0101 0110 1000 0000 0010 0001
+0x02548021
+
+b.
+sub $t1, $zero, $t1
+000000 00000 01001 01001 00000 100010
+0000 0000 0000 1001 0100 1000 0010 0010
+0x00094822
+
+c.
+lw $fp, 0($zero)
+100011 00000 11110 0000000000000000
+1000 1100 0001 1110 0000 0000 0000 0000
+0x8c1e0000 
+
+d.
+sw $ra, -16($t7)
+101011 01111 11111 1111111111110000
+1010 1101 1111 1111 1111 1111 1111 0000
+0xadfffff0
+ 
+Q5:
+a. 0x00028821
+0000 0000 0000 0010 1000 1000 0010 0001
+000000 00000 00010 10001 00000 100001
+addu $s1, $zero, $v0
+
+b. 0x34020004
+0011 0100 0000 0010 0000 0000 0000 0100
+001101 00000 00010 0000000000000100
+ori $v0, $zero, 4
+
+c. 0x0211082a
+0000 0010 0001 0001 0000 1000 0010 1010
+000000 10000 10001 00001 00000 101010
+slt $at, $s0, $s1
+
+d. 0x27a50004
+0010 0111 1010 0101 0000 0000 0000 0100
+001001 11101 00101 0000000000000100  
+addiu $a1, $sp, 4
+
+Q6:
+a.
+enter:
+    bne $s0, $s1, else    # go to else if a != b
+    sub $s1, $zero, $s0   # b = -a
+    j  exit               # goto exit
+else:
+    lw $t0, 0($s1)        # copy b to t0   
+    sw $t0, 0($s0)        # copy t0 to a
+exit:
+
+b.
+loop:
+   addi $t0, $s0, 1     # t0 = a + 1
+   sll  $t1, $s1, 1     # t1 = 2 * b
+   bne  $t0, $t1, exit  # goto exit if a + 1 != 2 * b
+   add  $t1, $s0, $s0   # t1 = a + a
+   add  $s0, $s0, $t1   # s0 *= 3 
+   j    loop            # go to loop
+exit:
+
+c.
+loop:
+   slt   $t0, $s0, $s1          # t0 = a < b? 1 : 0
+   bne   $t0, 1, enter          # goto enter if a >= b
+enter:
+   bne   $s0, $s1, exit         # goto exit if a != b   
+   subi  $t1, $s0, 100          # t1 = a - 100
+   slli  $s1, $t1, 2            # b = 4 * (a - 100)
+   addi  $s0, $s0, 1            # a++
+   j     loop                   # go to loop
+exit:
+
