@@ -1,3 +1,7 @@
+/*
+ *Jingbo Wang
+ */
+
 CC=clang
 CFLAGS=-std=c89 -Weverything -pedantic-errors
 OBJECTS=main.o contacts.o create.o search.o add.o delete.o exit.o
@@ -27,6 +31,6 @@ delete.o: delete.h delete.c contacts.h
 
 exit.o: exit.h exit.c contacts.h
 	$(CC) $(CFLAGS) -c exit.c
-		
+
 clean:
 	rm -f *.o *~ contacts
